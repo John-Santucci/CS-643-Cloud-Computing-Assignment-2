@@ -1,6 +1,7 @@
 
 
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.ml.Pipeline;
@@ -142,6 +143,37 @@ public class SparkRunner {
 	              .setElasticNetParam(0.8)
 	               .setFamily("multinomial");
 
+	       
+	        Dataset<Row> ValidationDataset = spark
+	                .read()
+	                .format("csv")
+	                .option("header", "true")
+	                .load("src/main/resources/ValidationDataset.csv");
+	        
+     		ValidationDataset = ValidationDataset.withColumn("fixed acidity",ValidationDataset.col("fixed acidity").cast("double"));
+     		ValidationDataset = ValidationDataset.withColumn("volatile acidity",ValidationDataset.col("volatile acidity").cast("double"));
+     		ValidationDataset = ValidationDataset.withColumn("citric acid",ValidationDataset.col("citric acid").cast("double"));
+     		ValidationDataset = ValidationDataset.withColumn("residual sugar",ValidationDataset.col("residual sugar").cast("double"));
+     		ValidationDataset = ValidationDataset.withColumn("chlorides",ValidationDataset.col("chlorides").cast("double"));
+     		ValidationDataset = ValidationDataset.withColumn("free sulfur dioxide",ValidationDataset.col("free sulfur dioxide").cast("double"));
+     		ValidationDataset = ValidationDataset.withColumn("total sulfur dioxide",ValidationDataset.col("total sulfur dioxide").cast("double"));
+     		ValidationDataset = ValidationDataset.withColumn("density",ValidationDataset.col("density").cast("double"));
+     		ValidationDataset = ValidationDataset.withColumn("pH",ValidationDataset.col("pH").cast("double"));
+     		ValidationDataset = ValidationDataset.withColumn("sulphates",ValidationDataset.col("sulphates").cast("double"));
+     		ValidationDataset = ValidationDataset.withColumn("alcohol",ValidationDataset.col("alcohol").cast("double"));
+     		ValidationDataset = ValidationDataset.withColumn("quality",ValidationDataset.col("quality").cast("double"));
+     		ValidationDataset.dtypes();	       
+	        
+
+     		
+     		
+     		Dataset <Row> prediction = lrModel.transform(ValidationDataset);
+     		
+     		System.out.println(prediction);
+     		prediction.select("features", "quality").show();
+     		
+
+     		
 	    }
 	    
 
