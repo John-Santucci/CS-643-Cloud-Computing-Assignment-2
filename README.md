@@ -1,58 +1,53 @@
-# CS-643-Cloud-Computing-Assignment-2 
+#CS 643 AWS ML Programming Assignment
+
+The purpose of this individual assignment is to learn how to develop parallel machine learning (ML) applications in Amazon AWS cloud platform. Specifically, you will learn: (1) how to use Apache Spark to train an ML model in parallel on multiple EC2 instances; (2) how to use Spark’s MLlib to develop and use an ML model in the cloud; (3) How to use Docker to create a container for your ML model to simplify model deployment. 
+
+# Wine Quality Prediction ML Model
+Build a wine quality prediction ML model in Spark over AWS. The model must be trained in parallel using 4 EC2 instances. Then, you need to save and load the model in a Spark application that will perform wine quality prediction; this application will run on one EC2 instance. The assignment must be implemented in Java on Ubuntu Linux. The details of the assignment are presented below: 
+#Input for model training: 
+There are 2 datasets with you for your ML model. 
+TrainingDataset.csv: you will use this dataset to train the model in parallel on multiple EC2 instances. 
+ValidationDataset.csv: you will use this dataset to validate the model and optimize its performance (i.e., select the best values for the model parameters). 
+#Input for prediction testing: 
+TestDataset.csv. We will use this file, which has a similar structure with the two datasets above, to test the functionality and performance of your prediction application. Your prediction application should take such a file as input. This file is not shared with you, but you can use the validation dataset to make sure your application works. 
+#Model Implementation: 
+You have to develop a Spark application that uses MLlib to train for wine quality prediction using the training dataset. You will use the validation dataset check the performance of your trained model and to potentially tune your ML model parameters for best performance. You should start with a simple linear regression or logistic regression model from MLlib, but you can try multiple ML models to see which one leads to better performance. For classification models, you can use 10 classes (the wine scores are from 1 to 10). Note: there will be extra-credit for the top 5 applications/students in terms of prediction performance (see below under grading). 
+#Docker container: 
+You have to build a Docker container for your prediction application. In this way, the prediction model can be quickly deployed across many different environments. 
+• The model training is done in parallel on 4 EC2 instances. 
+• The prediction with or without Docker is done on a single EC2 instance. 
+
+
+# Completion Steps 
+
+
+# Docker 
+
+Open up Command terminal 
+
+Access your file directory 
+
+Enter > docker login
+
+Then enter > docker build --tag cs643_sparkrunner .
+
+Finally enter > docker run --name cs643_sparkrunner node:latest
+
+
+# How to Set up AWS 
+
 
 # Create EC2 instances:
-Create 4 EC2 instances with Amazon Linux AMI.
+Under EMR create a cluster with 5 EC2 instances with Amazon Linux AMI.
+Under software configuration set the applications to Spark: Spark 2.4.7 on Hadoop 2.10.1 YARN and Zeppelin 0.8.2
+Under Hardware Configuration set the number of instances to 5. 
+Under Security and Access, we will proceed without an EC2 key pair.  
+1 EC2 instance will be the master. The 4 other EC2 instances will be slaves. 
 For the open ports, select 22 (SSH), 80 (HTTP), and 443 (HTTPS).
-For the first instance, create a new permission file and save it to disk.
-For the second, third and fourthinstance, use the existing pem file that was just created. 
-Create a new security group and attach existing polices for access to S3, SQS, and Wine_Test. Attach these security groups to the 4 EC2 instances.
+Add SparkRunner.jar and TrainingDataset.csv to S3 buckets 
 
-# Security Credentials setup
-The security credentials need to be saved on the machine that is running the projects (the EC2 instances in this case).
-The AWS SDK reads from these files to authenticate requests.
-For unix systems, create a ".aws/" directory at the home directory (~/).
-Create a config file inside the directory to set the default region
-- [default]
-- region=us-east-1
-Create a credentials file inside the directory to place the aws access key id and aws secret access key.
-- [default]
-- aws_access_key_id=<access-key-id>
-- aws_secret_access_key=<secret-key>
+Under the cluster, go to add steps. 
+Add SparkRunner.jar from the s3 bucket. 
+SetAction on Failure to "Cancel and Wait". 
+Once the SparkRunner is uploaded it will give the Wine Quality Prediction. 
 
-# Create the SQS queue
-Using the amazon console, create a FIFO SQS with all other settings left as default except for checking the box on "Content-based deduplication".
-# Input SQS queue name
-Inside Wine_List/SQSReader.java, replace queueUrl with the URL of your FIFO queue.
-Inside  Wine_Test/SQSWriter.java, replace queueName with the name of your FIFO queue.
-
-# Build the Java projects into a jar including the dependencies
-IntelliJ IDE was used to build the projects into a jar file including the dependencies using the .pom file.
-
-# Move Java projects to EC2 VMs:
-## Linux 
-scp -i pemFile.pem -r Wine_List/wine_list.jar ec2-user@ec2-54-227-215-164.compute-1.amazonaws.com:~/
-scp -i pemFile.pem -r Wine_Test/wine_test.jar ec2-user@ec2-3-88-188-69.compute-1.amazonaws.com:~/
-## Windows
-Transfer using FileZilla or similar method. 
-
-# Upgrade EC2 instances to run Java 1.8
-sudo yum install java-1.8.0-openjdk.x86_64
-sudo yum erase java-1.7.0-openjdk
-
-# Connect to instances:
-ssh -i pemFile1.pem ec2-user@ec2-54-227-215-164.compute-1.amazonaws.com
-ssh -i pemFile2.pem ec2-user@ec2-3-88-188-69.compute-1.amazonaws.com
-
-# Run Java applications
-## In EC2A
-java -jar Wine_List.jar
-## In EC2B
-java -jar Wine_Test.jar
-## In EC2C
-java -jar Wine_Test.jar
-## In EC2D
-java -jar Wine_Test.jar
-
-
-# Results
-In EC2B,EC2C, and EC2D a file called "results.txt" will be created and includes the results of running the application.
