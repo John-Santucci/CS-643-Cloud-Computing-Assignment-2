@@ -58,16 +58,26 @@ Finally enter > docker run --name cs643_sparkrunner node:latest
 
 
 # Create EC2 instances:
+
 Under EMR create a cluster with 5 EC2 instances with Amazon Linux AMI.
+
 Under software configuration set the applications to Spark: Spark 2.4.7 on Hadoop 2.10.1 YARN and Zeppelin 0.8.2
+
 Under Hardware Configuration set the number of instances to 5. 
-Under Security and Access, we will proceed without an EC2 key pair.  
+
+Under Security and Access, we will proceed without an EC2 key pair.
+
 1 EC2 instance will be the master. The 4 other EC2 instances will be slaves. 
+
 For the open ports, select 22 (SSH), 80 (HTTP), and 443 (HTTPS).
+
 Add SparkRunner.jar and TrainingDataset.csv to S3 buckets 
 
 Under the cluster, go to add steps. 
+
 Add SparkRunner.jar from the s3 bucket. 
+
 SetAction on Failure to "Cancel and Wait". 
+
 Once the SparkRunner is uploaded it will give the Wine Quality Prediction. 
 
