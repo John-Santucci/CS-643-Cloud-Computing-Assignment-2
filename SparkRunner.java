@@ -41,22 +41,13 @@ public class SparkRunner {
 	        
 	        System.out.println("Beginning of page");
 	        SparkConf conf = new SparkConf().setAppName("testWine").setMaster("local");
-//	        JavaSparkContext sc = new JavaSparkContext(conf);
 
 	        SparkSession spark = SparkSession
 	                .builder()
 	                .appName("Wine trainer")
 	                .master("local")
 	                .getOrCreate();
-	        
-
-//	        StructType customStructType = new StructType();{
-//	        		createStructField("id", DoubleType, false),
-//	        		createStructField("hour", DoubleType, false),
-//	        		createStructField("mobile", DoubleType, false),
-//	        		createStructField("userFeatures", new VectorUDT(), false),
-//	        		createStructField("clicked", DoubleType, false)
-//	        	});	  	        
+	        	  	        
 	        
 	        // Load and parse the data file, converting it to a DataFrame.
 	        Dataset<Row> trainingData = spark
@@ -80,7 +71,6 @@ public class SparkRunner {
 	        		trainingData.dtypes();
 	        		
       		
-	        // trainingData = trainingData.withColumn("label", trainingData("show").cast("double"));
 	        		
 	        		
 	        VectorAssembler assembler = new VectorAssembler()
@@ -128,14 +118,6 @@ public class SparkRunner {
 //	        // Print the coefficients and intercept for logistic regression
 	        System.out.println("Coefficients: " + lrModel.explainParams());
 
-
-//	//// Fit the model
-//	        LogisticRegressionModel plModel = lr.fit(trainingData);
-//	//
-//	//// Print the coefficients and intercept for logistic regression
-//	      System.out.println("Coefficients: " + plModel.coefficients() + " Intercept: " + plModel.intercept());
-//	//
-	//// We can also use the multinomial family for binary classification
 	        
 	       LogisticRegression mlr = new LogisticRegression()
 	                .setMaxIter(10)
